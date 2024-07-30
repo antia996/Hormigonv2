@@ -88,9 +88,15 @@ namespace B4a
             }
             else if (fInitialPositionMap.find(trackID) != fInitialPositionMap.end()) {
                 // If the particle exits the detector, calculate the effective range
-                G4ThreeVector initialPosition = fInitialPositionMap[trackID];
-                G4ThreeVector finalPosition = step->GetPreStepPoint()->GetPosition();
-                G4double range = (finalPosition - initialPosition).mag();
+                //G4ThreeVector initialPosition = fInitialPositionMap[trackID];
+                //G4ThreeVector finalPosition = step->GetPreStepPoint()->GetPosition();
+                G4double initialPosition = fInitialPositionMap[trackID].z();
+                G4double finalPosition = step->GetPreStepPoint()->GetPosition().z();
+                //G4double range = (finalPosition - initialPosition).mag();
+                G4double range = std::abs(finalPosition - initialPosition);
+               
+                G4cout << "initialPosition " << initialPosition << ", finalPosition: " << finalPosition << ", range: " << range << G4endl;
+
 
                 // Add the effective range to the event action
                 fEventAction->AddEffectiveRange(range);
