@@ -35,35 +35,39 @@
 #include "G4ThreeVector.hh"
 namespace B4
 {
-  class DetectorConstruction;
+    class DetectorConstruction;
 }
 
 namespace B4a
 {
 
-class EventAction;
+    class EventAction;
 
-/// Stepping action class.
-///
-/// In UserSteppingAction() there are collected the energy deposit and track
-/// lengths of charged particles in Absober and Gap layers and
-/// updated in EventAction.
+    /// Stepping action class.
+    ///
+    /// In UserSteppingAction() there are collected the energy deposit and track
+    /// lengths of charged particles in Absober and Gap layers and
+    /// updated in EventAction.
 
-class SteppingAction : public G4UserSteppingAction
-{
-public:
-  SteppingAction(const B4::DetectorConstruction* detConstruction,
-                 EventAction* eventAction);
-  ~SteppingAction() override = default;
+    class SteppingAction : public G4UserSteppingAction
+    {
+    public:
+        SteppingAction(const B4::DetectorConstruction* detConstruction,
+            EventAction* eventAction);
+        ~SteppingAction() override = default;
 
-  void UserSteppingAction(const G4Step* step) override;
+        void UserSteppingAction(const G4Step* step) override;
 
-private:
-  const B4::DetectorConstruction* fDetConstruction = nullptr;
-  EventAction* fEventAction = nullptr;
+    private:
+        const B4::DetectorConstruction* fDetConstruction = nullptr;
+        EventAction* fEventAction = nullptr;
 
-  std::map<G4int, G4ThreeVector> fInitialPositionMap; //guarda las posiciones inciales de las particulas
-};
+        G4double maxRange = 0;
+
+        std::map<G4int, G4ThreeVector> fInitialPositionMap; //guarda las posiciones inciales de las particulas
+        std::map<G4int, G4ThreeVector> fPreviousPositionMap;
+        std::map<G4int, G4double> fMaxRangeMap;
+    };
 
 }
 

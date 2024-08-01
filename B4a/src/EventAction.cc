@@ -37,18 +37,20 @@
 
 #include "Randomize.hh"
 #include <iomanip>
+#include <map>
 
 namespace B4a
 {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EventAction::BeginOfEventAction(const G4Event* /*event*/)
+void EventAction::BeginOfEventAction(const G4Event* event)
 {
   // initialisation per event
   fEnergyDetector = 0.;
   fTrackLDetector = 0.;
   fEffectiveRange = 0.;
+  G4cout << "Evento: " << event->GetEventID() << G4endl;
 
 }
 
@@ -56,6 +58,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 void EventAction::EndOfEventAction(const G4Event* event)
 {
+
 
     G4int nPrimaries = event->GetNumberOfPrimaryVertex();
 
@@ -105,7 +108,10 @@ void EventAction::EndOfEventAction(const G4Event* event)
 
 
         }
+        // Debug output
+        G4cout << "Effective Range: " << fEffectiveRange << G4endl;
     }
+
 
 }
 

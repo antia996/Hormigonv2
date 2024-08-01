@@ -26,7 +26,6 @@
 //
 /// \file B4/B4a/include/EventAction.hh
 /// \brief Definition of the B4a::EventAction class
-
 #ifndef B4aEventAction_h
 #define B4aEventAction_h 1
 
@@ -37,44 +36,43 @@
 namespace B4a
 {
 
-/// Event action class
-///
-/// It defines data members to hold the energy deposit and track lengths
-/// of charged particles in Absober and Gap layers:
+    /// Event action class
+    ///
+    /// It defines data members to hold the energy deposit and track lengths
+    /// of charged particles in Absober and Gap layers:
 
-class EventAction : public G4UserEventAction
-{
-  public:
-    EventAction() = default;
-    ~EventAction() override = default;
+    class EventAction : public G4UserEventAction
+    {
+    public:
+        EventAction() = default;
+        ~EventAction() override = default;
 
-    void  BeginOfEventAction(const G4Event* event) override;
-    void    EndOfEventAction(const G4Event* event) override;
+        void  BeginOfEventAction(const G4Event* event) override;
+        void    EndOfEventAction(const G4Event* event) override;
 
-    void AddDetector(G4double de, G4double dl);
-    void AddEffectiveRange(G4double range);
+        void AddDetector(G4double de, G4double dl);
+        void AddEffectiveRange(G4double range);
 
-  private:
-    G4double  fEnergyDetector = 0.;
-    G4double  fTrackLDetector = 0.;
-    G4SDParticleFilter* neutronFilter;
-    G4double fEffectiveRange;
-};
+    private:
+        G4double  fEnergyDetector = 0.;
+        G4double  fTrackLDetector = 0.;
+        G4SDParticleFilter* neutronFilter;
+        G4double fEffectiveRange;
+    };
 
-// inline functions
-inline void EventAction::AddDetector(G4double de, G4double dl) {
-    fEnergyDetector += de;
-    fTrackLDetector += dl;
-}
+    // inline functions
+    inline void EventAction::AddDetector(G4double de, G4double dl) {
+        fEnergyDetector += de;
+        fTrackLDetector += dl;
+    }
 
-inline void EventAction::AddEffectiveRange(G4double range) {
-    fEffectiveRange += range;
-}
+    inline void EventAction::AddEffectiveRange(G4double range) {
+        fEffectiveRange = range;
+    }
 
 
 }
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
 

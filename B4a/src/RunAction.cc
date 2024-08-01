@@ -65,7 +65,7 @@ namespace B4
       // Creating histograms
         analysisManager->CreateH1("EdepDetector", "Edep in detector", 300, 0., 3 * MeV);
         analysisManager->CreateH1("LengthDetector", "trackL in detector", 300, 0., 80 * cm);
-        analysisManager->CreateH1("EffectiveRange", "Effective range in detector", 300, 0., 80 * cm); // New histogram for effective range
+        analysisManager->CreateH1("EffectiveRange", "Effective range in detector", 300, 0., 100 * cm); // New histogram for effective range
 
 
 

@@ -26,7 +26,6 @@
 //
 /// \file B4/B4a/src/SteppingAction.cc
 /// \brief Implementation of the B4a::SteppingAction class
-
 #include "SteppingAction.hh"
 #include "EventAction.hh"
 #include "DetectorConstruction.hh"
@@ -57,9 +56,12 @@ namespace B4a
 
           // get volume of the current step
         auto volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+        auto nextVolume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume();
 
         // energy deposit
         auto edep = step->GetTotalEnergyDeposit();
+
+        auto kineticEnergy = step->GetPreStepPoint()->GetKineticEnergy();
 
         auto particle = step->GetTrack()->GetDefinition();
 
@@ -68,6 +70,7 @@ namespace B4a
         G4ThreeVector position = step->GetPostStepPoint()->GetPosition();
 
         // step length
+        
         G4double stepLength = 0.;
         if (step->GetTrack()->GetDefinition()->GetPDGCharge() == 0. && particle->GetPDGEncoding() == 2112) {
             stepLength = step->GetStepLength();
@@ -85,31 +88,78 @@ namespace B4a
                 G4double y = step->GetPreStepPoint()->GetPosition().y();
                 auto analysisManager = G4AnalysisManager::Instance();
                 analysisManager->FillH2(0, x, y);
+
+                // Almacena la posición actual como la posición anterior para el siguiente paso
+                fPreviousPositionMap[trackID] = step->GetPreStepPoint()->GetPosition();
             }
-            else if (fInitialPositionMap.find(trackID) != fInitialPositionMap.end()) {
+            
+            if (fInitialPositionMap.find(trackID) != fInitialPositionMap.end()) {
                 // If the particle exits the detector, calculate the effective range
                 //G4ThreeVector initialPosition = fInitialPositionMap[trackID];
                 //G4ThreeVector finalPosition = step->GetPreStepPoint()->GetPosition();
-                G4double initialPosition = fInitialPositionMap[trackID].z();
+                //G4double initialPosition = fInitialPositionMap[trackID].z();
+                G4double initialPosition = -400;
+                G4double previousPosition = fPreviousPositionMap[trackID].z();
                 G4double finalPosition = step->GetPreStepPoint()->GetPosition().z();
                 //G4double range = (finalPosition - initialPosition).mag();
-                G4double range = std::abs(finalPosition - initialPosition);
+                G4double range = std::abs(previousPosition - initialPosition);
+
+                G4cout << "initialPosition " << initialPosition << ", finalPosition: " << previousPosition << ", range: " << range << G4endl;
+
+
+                // Bucle para encontrar el rango máximo mientras el rango sea mayor que 0
                
-                G4cout << "initialPosition " << initialPosition << ", finalPosition: " << finalPosition << ", range: " << range << G4endl;
+                // Añade el rango efectivo a la acción del evento
+                //fEventAction->AddEffectiveRange(range);
+
+              
+                while (range > 0) {
+                    if (range > maxRange) {
+                        maxRange = range;
+                        G4cout << "el rango maximo es: " << maxRange << G4endl;
+                        //fEventAction->AddEffectiveRange(maxRange);
+                    }
+                    range = 0;  // Esto es solo para romper el bucle y evitar un bucle infinito.
+                }
+                // Elimina el ID de la trayectoria del mapa
+                
+                fInitialPositionMap.erase(trackID);
+                fPreviousPositionMap.erase(trackID);
+            }
+
+            /*
+            // If the kinetic energy of the particle is zero
+            if (kineticEnergy == 0.0 && fInitialPositionMap.find(trackID) != fInitialPositionMap.end()) {
+                //G4double initialPosition = fInitialPositionMap[trackID].z();
+                G4double initialPosition = -400;
+                G4double previousPosition = fPreviousPositionMap[trackID].z();
+                G4double range = std::abs(previousPosition - initialPosition);
+
+                G4cout << "initialPosition " << initialPosition << ", previousPosition: " << previousPosition << ", range: " << range << G4endl;
+                G4cout << "HOLAAAAAAAAA" << G4endl;
+
 
 
                 // Add the effective range to the event action
-                fEventAction->AddEffectiveRange(range);
+                //fEventAction->AddEffectiveRange(range);
 
                 // Remove the track ID from the map
                 fInitialPositionMap.erase(trackID);
+                fPreviousPositionMap.erase(trackID);
             }
+            */
         }
-
+    fEventAction->AddEffectiveRange(maxRange);
     }
 
 
-
+    
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 };
+
+
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+
